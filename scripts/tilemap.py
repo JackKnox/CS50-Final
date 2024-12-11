@@ -12,15 +12,17 @@ class Tilemap:
         self.tilemap = {}
         self.spr = load_images("tiles/" + spr.lower())
         self.offset = [0, 0]
+
+        self.game.tilemaps.append(self)
     
-    def load(self, type, size) -> None:
+    def load(self, type, size):
         self.spr = load_images("tiles/" + type.lower())
         self.tile_size = size
 
-    def get_tile(self, type, x, y) -> bool:
+    def get_tile(self, type, x, y):
         return self.tilemap.get((x, y), {}).get("type") == type
 
-    def calculate_tile_variant(self, type, x, y) -> int:
+    def calculate_tile_variant(self, type, x, y):
         value = 1
         if self.get_tile(type, x, y - 1): value += 1
         if self.get_tile(type, x, y + 1): value += 4
@@ -28,10 +30,10 @@ class Tilemap:
         if self.get_tile(type, x + 1, y): value += 2
         return value
 
-    def set(self, x, y, type, variant=1) -> None:
+    def set(self, x, y, type, variant=1):
         self.tilemap[(x, y)] = {'type': type, 'variant': variant, 'pos': (x, y)}
 
-    def autotile(self) -> None:
+    def autotile(self):
         updated = set()
         for (x, y), tile in self.tilemap.items():
             if (x, y) not in updated:
@@ -47,7 +49,7 @@ class Tilemap:
                         neighbor["variant"] = self.calculate_tile_variant(type, nx, ny)
                         updated.add((nx, ny))
 
-    def tiles_around(self, pos) -> list:
+    def tiles_around(self, pos):
         tiles = []
         tile_loc = (int(pos[0] // self.tile_size), int(pos[1] // self.tile_size))
         for offset in NEIGHBOR_OFFSETS:
@@ -56,7 +58,7 @@ class Tilemap:
                 tiles.append(self.tilemap[check_loc])
         return tiles
     
-    def physics_rects_around(self, pos) -> list:
+    def physics_rects_around(self, pos):
         rects = []
         for tile in self.tiles_around(pos):
             rects.append(pygame.Rect(tile['pos'][0] * self.tile_size + self.offset[0], tile['pos'][1] * self.tile_size + self.offset[1], self.tile_size, self.tile_size))

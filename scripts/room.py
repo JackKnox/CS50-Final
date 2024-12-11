@@ -1,3 +1,5 @@
+from math import floor
+
 from scripts.tilemap import Tilemap
 from scripts.entities import GameObject
 
@@ -10,7 +12,8 @@ class Room:
         self.name = type(self).__name__.lower()
         self.game.rooms[self.name] = self
         
-        self.tilemap = Tilemap(self)
+        self.tilemaps = []
+        self.tilemaps.append(Tilemap(self))
 
         self.objects = []
         self.scroll = [0, 0]
@@ -25,11 +28,13 @@ class Room:
             self.scroll[1] += (followy - self.game.display.get_height() / 2 - self.scroll[1]) / 30
         
         for obj in self.objects:
-            obj.update(self.tilemap, delta)
+            obj.update(self.tilemaps[0], delta)
 
     def render(self) -> None:
         render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
-        self.tilemap.render(self.game.display, offset=render_scroll)
+
+        for tilemap in self.tilemaps:
+            tilemap.render(self.game.display, offset=render_scroll)
 
         for obj in self.objects:
             obj.render(self.game.display, offset=render_scroll)
