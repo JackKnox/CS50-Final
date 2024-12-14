@@ -78,8 +78,7 @@ class CollisionPlacer:
 
     def compute(self):
         for tile in self.tilemap.values():
-            variant = tile["variant"]
-            mask_x = variant * self.scale_factor
+            mask_x = tile["variant"] * self.scale_factor
             mask_y = 0
 
             tile_x = (tile["pos"][0] * self.tile_size) // self.collimap.tile_size            

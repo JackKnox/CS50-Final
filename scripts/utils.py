@@ -2,6 +2,7 @@ import pygame
 import os
 
 BASE_IMG_PATH = 'data/images/'
+BASE_FNT_PATH = 'data/fonts/'
 
 def load_image(path) -> pygame.image:
     img = pygame.image.load(BASE_IMG_PATH + path).convert()
@@ -13,6 +14,12 @@ def load_images(path) -> list:
     for img_name in sorted(os.listdir(BASE_IMG_PATH + path)):
         images.append(load_image(path + '/' + img_name))
     return images
+
+def load_fonts() -> list:
+    fonts = {}
+    for font_name in sorted(os.listdir(BASE_FNT_PATH)):
+        fonts[font_name.split(".")[0]] = pygame.Font(BASE_FNT_PATH + font_name)
+    return fonts
 
 class Animation:
     def __init__(self, images, img_dur=5, loop=True):

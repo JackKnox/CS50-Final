@@ -3,6 +3,7 @@ import sys
 
 from scripts.room import Room
 from scripts.entities import GameObject
+from scripts.utils import load_fonts
 
 class Game:
     def __init__(self, name, fps, size, scale):
@@ -11,16 +12,15 @@ class Game:
         pygame.display.set_caption(name)
         self.screen = pygame.display.set_mode(size)
         self.display = pygame.Surface((size[0] / scale, size[1] / scale))
-        self.font = pygame.Font("data/fonts/born2bsporty.otf")
 
         self.clock = pygame.time.Clock()
         self.delta_time = 0
         
         self.current_room = None
         self.rooms = {}
+        self.fonts = {}
 
         self.fps = fps
-        self.create = True
     
     def switch_room(self, room):
         if self.current_room:
@@ -44,11 +44,10 @@ class Game:
                 return room
 
     def run(self) -> None:
-        while True:
-            if self.create:
-                self.create = False
-                self.switch_room(self.get_primary().name)
+        self.switch_room(self.get_primary().name)
+        self.fonts = load_fonts()
 
+        while True:
             self.delta_time = self.clock.tick(self.fps) / 1000
             self.display.fill((0, 0, 0))
 

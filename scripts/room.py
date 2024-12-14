@@ -7,7 +7,6 @@ class Room:
     def __init__(self, game, primary=False):
         self.game = game
         self.primary = primary
-        self.font = self.game.font
 
         self.name = type(self).__name__.lower()
         self.game.rooms[self.name] = self
