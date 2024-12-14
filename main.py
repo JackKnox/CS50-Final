@@ -15,7 +15,7 @@ class Main(Room):
 
         self.road = Tilemap(self, "Road", 320)
         WalkerAlgorithm((0, 0), pygame.Rect(0, 0, 20, 20), self.road, True).compute(20)
-        CollisionPlacer(64, self.road, self.tilemaps[0]).compute()
+        CollisionPlacer("road-mask.png", self.road, self.tilemap).compute()
 
         Car(self, pos=(160, 160), primary=True)
 

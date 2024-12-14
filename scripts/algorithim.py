@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from scripts.utils import *
+
 #            left     right    down    up
 DIRECTIONS = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
@@ -64,42 +66,28 @@ class WalkerAlgorithm:
         self.direction = DIRECTIONS[0]
 
 class CollisionPlacer:
-    def __init__(self, length, tilemap, collimap):
-        self.len = length
+    def __init__(self, mask, tilemap, collimap):
+        self.img = load_image(mask)
         self.tilemap = tilemap
-        self.collimap = tilemap
+        self.collimap = collimap
+        self.tile_size = self.tilemap.tile_size
+        self.scale_factor = self.tilemap.tile_size // self.collimap.tile_size
 
-        self.base = []
-
-        tile_size = self.tilemap.tile_size
-
-        self.base.append([pygame.Rect(0, length, tile_size-length, tile_size - length*2)  , [[None] * tile_size] * tile_size]) # left
-        self.base.append([pygame.Rect(length, length, tile_size-length, tile_size - length*2), [[None] * tile_size] * tile_size]) # right
-        self.base.append([pygame.Rect(0, length, tile_size - length*2, tile_size-length)  , [[None] * tile_size] * tile_size]) # up
-        self.base.append([pygame.Rect(length, length, tile_size - length*2, tile_size-length), [[None] * tile_size] * tile_size]) # down
-        
-        for rect, walls in self.base:
-            for x in range(len(walls)):
-                for y in range(len(walls[x])):
-                    if (x == rect.left-1 or x == rect.right+1 - 1 or y == rect.top-1 or y == rect.bottom+1):
-                        walls[x][y] = True
-                    else:
-                        walls[x][y] = False
+        self.wall_color = (255, 0, 0, 255)
+        self.empty_color = (0, 255, 0, 255)
 
     def compute(self):
-        for tile in self.tilemap.tilemap.values():
-            print(tile)
+        for tile in self.tilemap.values():
+            variant = tile["variant"]
+            mask_x = variant * self.scale_factor
+            mask_y = 0
 
-    def get_tile_neighbours(self, value):
-        neighbours = []
+            tile_x = (tile["pos"][0] * self.tile_size) // self.collimap.tile_size            
+            tile_y = (tile["pos"][1] * self.tile_size) // self.collimap.tile_size
 
-        if value & 2:
-            neighbours.append(DIRECTIONS[0])
-        if value & 4:
-            neighbours.append(DIRECTIONS[2])
-        if value & 8:
-            neighbours.append(DIRECTIONS[1])
-        if value & 16:
-            neighbours.append(DIRECTIONS[3])
-        
-        return neighbours
+            for i in range(self.scale_factor):
+                for j in range(self.scale_factor):
+                    pixel = self.img.get_at((mask_x+i, mask_y+j))
+
+                    if pixel == self.wall_color:
+                        self.collimap.set(tile_x+i, tile_y+j, type="test")

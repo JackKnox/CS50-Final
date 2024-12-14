@@ -12,9 +12,13 @@ class Tilemap:
         self.tilemap = {}
         self.spr = load_images("tiles/" + spr.lower())
         self.offset = [0, 0]
+        self.autotile_values = {}
 
         self.game.tilemaps.append(self)
     
+    def values(self):
+        return self.tilemap.values()
+
     def load(self, type, size):
         self.spr = load_images("tiles/" + type.lower())
         self.tile_size = size
@@ -24,12 +28,14 @@ class Tilemap:
 
     def calculate_tile_variant(self, type, x, y):
         value = 1
+
         if self.get_tile(type, x, y - 1): value += 1
         if self.get_tile(type, x, y + 1): value += 4
         if self.get_tile(type, x - 1, y): value += 8
         if self.get_tile(type, x + 1, y): value += 2
-        return value
 
+        return value
+    
     def set(self, x, y, type, variant=1):
         self.tilemap[(x, y)] = {'type': type, 'variant': variant, 'pos': (x, y)}
 

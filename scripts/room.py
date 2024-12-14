@@ -13,7 +13,7 @@ class Room:
         self.game.rooms[self.name] = self
         
         self.tilemaps = []
-        self.tilemaps.append(Tilemap(self))
+        self.tilemap = Tilemap(self, tile_size=32)
 
         self.objects = []
         self.scroll = [0, 0]
@@ -24,8 +24,8 @@ class Room:
             followx = primary.rect().centerx
             followy = primary.rect().centery
 
-            self.scroll[0] += (followx - self.game.display.get_width() / 2 - self.scroll[0]) / 30
-            self.scroll[1] += (followy - self.game.display.get_height() / 2 - self.scroll[1]) / 30
+            self.scroll[0] += (followx - self.game.display.get_width() / 2 - self.scroll[0]) / 10
+            self.scroll[1] += (followy - self.game.display.get_height() / 2 - self.scroll[1]) / 10
         
         for obj in self.objects:
             obj.update(self.tilemaps[0], delta)
@@ -47,7 +47,6 @@ class Room:
     def process_events(self, event):
         for obj in self.objects:
             obj.process_events(event)
-
 
     def start(self) -> None:
         if self.get_primary():
