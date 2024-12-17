@@ -10,9 +10,11 @@ ALIGNMENTS = {
     "BOTTOM_CENTER": (0.5, 1),
 }
 
+#TODO: Add base colours and colour pallette 
 COLORS = {
     "WHITE": (255, 255, 255),
     "RED": (255, 0, 0),
+    "GREEN" : (0, 255, 0)
 }
 
 class Text:
@@ -21,14 +23,18 @@ class Text:
         self.text = text
         self.tag_map = []
         self.antialias(False)
-        self.starting_format("main-font", COLORS["WHITE"])
+        self.starting_format("main-font", "WHITE")
         self.align("TOP_LEFT")
 
     def starting_format(self, font, color):
         self.color = color
         self.font = font
-        self.font_size = self.game.fonts[self.font].size("H")  # Approximate height
+        self.font_size = self.get_font_asset().size("H")  # Approximate height
+        self.space = self.get_font_asset().size(" ")[0]
         return self
+
+    def get_font_asset(self):
+        return self.game.fonts[self.font]
 
     def align(self, alignment):
         self.offset = ALIGNMENTS.get(alignment, (0, 0))
@@ -40,35 +46,40 @@ class Text:
 
     def get_segments(self):
         self.tag_map = []
-        segments = self.text.split("[")
-        for segment in segments[1:]:
-            if "]" in segment:
-                tag, content = segment.split("]", 1)
-                lines = content.split("\n")  # Split by newline
-                for line in lines:
-                    self.tag_map.append((tag.strip(), line.strip()))
-            else:
-                # Handle malformed tags gracefully
-                self.tag_map.append(("WHITE", segment.strip()))
+        text = self.text.split("[")
+
+        if text[0]:
+            self.tag_map.append(["WHITE", text[0]])
+
+        for segment in text[1:]:
+            segment_txt = segment.split("]")
+
+            self.tag_map.append((segment_txt[0], segment_txt[1]))
 
     def draw(self, x, y):
         self.get_segments()
-        initial_x, initial_y = x, y  # Save starting position
+        text_x, text_y = x, y
 
         for segment in self.tag_map:
             color_tag, text = segment
             color = COLORS.get(color_tag, COLORS["WHITE"])
             font = self.game.fonts[self.font]
+            newline = False
 
-            text_width, text_height = font.size(text)
-            aligned_x = initial_x - text_width * self.offset[0]
-            aligned_y = y - text_height * self.offset[1]
+            if text[-1:] == '\n':
+                text = text[:-1] # Set text before font.size()
+                newline = True
 
-            # Render the text
+            width, height = font.size(text)
+            aligned_x = text_x - width * self.offset[0]
+            aligned_y = text_y - height * self.offset[1]
+
+            if newline:
+                text_y += height
+            else:
+                text_x += width + self.space
+            
             text_surf = font.render(text, self.anti_alias, color)
             self.game.display.blit(text_surf, (aligned_x, aligned_y))
-
-            # Move to the next line for multiline text
-            y += text_height/2
 
         return self

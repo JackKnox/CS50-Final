@@ -8,10 +8,12 @@ from scripts.utils import load_fonts
 class Game:
     def __init__(self, name, fps, size, scale):
         pygame.init()
+        self.width = size[0] // scale
+        self.height = size[1] // scale
 
         pygame.display.set_caption(name)
         self.screen = pygame.display.set_mode(size)
-        self.display = pygame.Surface((size[0] / scale, size[1] / scale))
+        self.display = pygame.Surface((self.width, self.height))
 
         self.clock = pygame.time.Clock()
         self.delta_time = 0

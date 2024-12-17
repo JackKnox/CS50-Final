@@ -11,8 +11,10 @@ class Title(Room):
 
     def update(self, delta):
         super().update(delta)
-    
-        Text(self, "[RED]Hello, World!\n[WHITE]Hello, World!").draw(0,0)
+        
+        txt = Text(self, "[RED]Hello, World!\n[WHITE]Hello, World![GREEN]Hello, World!")
+        txt.align("MIDDLE_CENTER")
+        txt.draw(self.game.width/2, self.game.height/2)
 
 class Main(Room):
     def __init__(self, game, primary=False):
