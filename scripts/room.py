@@ -16,6 +16,7 @@ class Room:
 
         self.objects = []
         self.scroll = [0, 0]
+        self.background_col = (0, 0, 0)
 
     def update(self, delta) -> None:
         if self.get_primary():

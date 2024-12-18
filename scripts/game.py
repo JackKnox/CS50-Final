@@ -11,6 +11,8 @@ class Game:
         self.width = size[0] // scale
         self.height = size[1] // scale
 
+        self.screen_scale = scale
+        
         pygame.display.set_caption(name)
         self.screen = pygame.display.set_mode(size)
         self.display = pygame.Surface((self.width, self.height))
@@ -51,7 +53,7 @@ class Game:
 
         while True:
             self.delta_time = self.clock.tick(self.fps) / 1000
-            self.display.fill((0, 0, 0))
+            self.display.fill(self.room().background_col)
 
             self.update()
             self.render()

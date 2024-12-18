@@ -8,11 +8,16 @@ from scripts.ui import *
 class Title(Room):
     def __init__(self, game, primary=False):
         super().__init__(game, primary)
+        self.background_col = (193, 198, 255)
 
     def update(self, delta):
         super().update(delta)
-        
-        txt = Text(self, "[RED]Hello, World!\n[WHITE]Hello, World![GREEN]Hello, World!")
+
+        def _(self):
+            self.game.switch_room("Main")
+            return "RED"
+
+        txt = Button(self, "Hello, World!", onclick=_)
         txt.align("MIDDLE_CENTER")
         txt.draw(self.game.width/2, self.game.height/2)
 
