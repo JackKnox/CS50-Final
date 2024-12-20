@@ -1,3 +1,5 @@
+import sys
+
 from scripts.game import *
 from scripts.room import *
 from scripts.tilemap import *
@@ -5,21 +7,33 @@ from scripts.entities import *
 from scripts.algorithim import *
 from scripts.ui import *
 
+def mix_colors(*colors: object) -> tuple:
+    num_colors = len(colors)
+    
+    summed_color = [0, 0, 0]
+    for color in colors:
+        for i in range(3):
+            summed_color[i] += color[i]
+    
+    return tuple(s // num_colors for s in summed_color)
+
 class Title(Room):
     def __init__(self, game, primary=False):
         super().__init__(game, primary)
-        self.background_col = (193, 198, 255)
+        self.background_col = mix_colors(PALETTE_PURPLE, PALETTE_WHITE)
 
     def update(self, delta):
         super().update(delta)
 
-        def _(self):
-            self.game.switch_room("Main")
-            return "RED"
-
-        txt = Button(self, "Hello, World!", onclick=_)
-        txt.align("MIDDLE_CENTER")
-        txt.draw(self.game.width/2, self.game.height/2)
+        cont = Container(self, [
+            Text(self, "CS50 Final!"),
+            CONTAINER_SPACE,
+            Button(self, "Start Game!", onclick=lambda self: self.game.switch_room("Main")),
+            Button(self, "Quit Game!", onclick=lambda self: sys.exit()),
+        ])
+        cont.starting_format("main-font", PALETTE_WHITE)
+        cont.align(MIDDLE_CENTER)
+        cont.draw(self.game.width/2, self.game.height/2)
 
 class Main(Room):
     def __init__(self, game, primary=False):
@@ -37,6 +51,5 @@ class CarGame(Game):
         
         Main(self)
         Title(self, primary=True)
-
 
 CarGame().run()
