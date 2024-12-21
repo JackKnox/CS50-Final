@@ -17,11 +17,12 @@ class WalkerAlgorithm:
         self.step_history = set()
         self.steps_since_turn = 0
         self.autotile = autotile
+        self.end = None
 
         self.step_history.add(tuple(position))
 
-    def compute(self, steps) -> list:
-        for _ in range(steps):
+    def compute(self, steps):
+        for i in range(steps):
             if random.random() <= 0.1 or self.steps_since_turn >= 8:
                 self.change_direction()
 
@@ -29,6 +30,16 @@ class WalkerAlgorithm:
                 self.step_history.add(tuple(self.position))
             else:
                 self.change_direction()
+            
+            if i == steps-1:
+                tile_size = self.tilemap_asset.tile_size
+
+                self.end = pygame.Rect(
+                    self.position[0] * tile_size + 64, 
+                    self.position[1] * tile_size + 64, 
+                    tile_size - 64, 
+                    tile_size - 64
+                )
 
         history = list(self.step_history)
         for location in history:
@@ -39,7 +50,7 @@ class WalkerAlgorithm:
         if self.autotile:
             self.tilemap_asset.autotile()
         
-        return history
+        return self
 
     def step(self) -> bool:
         target_position = [self.position[0] + self.direction[0], self.position[1] + self.direction[1]]
@@ -64,6 +75,9 @@ class WalkerAlgorithm:
                 return
         
         self.direction = DIRECTIONS[0]
+    
+    def get_end(self):
+        return self.end
 
 class CollisionPlacer:
     def __init__(self, mask, tilemap, collimap):

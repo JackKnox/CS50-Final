@@ -31,6 +31,7 @@ class Game:
             self.room().end()
 
         self.current_room = room
+        self.room().__init__(self, self.room().primary)
         self.room().start()
 
     def room(self):
@@ -63,6 +64,6 @@ class Game:
                     pygame.quit()
                     sys.exit()
                 self.room().process_events(event)
-
+            
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
             pygame.display.update()

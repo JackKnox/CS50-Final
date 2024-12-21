@@ -21,6 +21,16 @@ def load_fonts() -> list:
         fonts[font_name.split(".")[0]] = pygame.Font(BASE_FNT_PATH + font_name)
     return fonts
 
+def mix_colors(*colors: object) -> tuple:
+    num_colors = len(colors)
+    
+    summed_color = [0, 0, 0]
+    for color in colors:
+        for i in range(3):
+            summed_color[i] += color[i]
+    
+    return tuple(s // num_colors for s in summed_color)
+
 class Animation:
     def __init__(self, images, img_dur=5, loop=True):
         self.images = images

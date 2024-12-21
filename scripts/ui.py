@@ -48,14 +48,14 @@ PALETTE_DARK_SKIN = (194, 133, 105)
 class Text:
     def __init__(self, game, text):
         self.game = game.game
-        self.text = text
+        self.text = str(text)
         self.tag_map = []
         self.outline_col = -1
         self.outline((0, 0, 0))
         self.antialias(False)
         self.starting_format("main-font", PALETTE_WHITE)
         self.align(TOP_LEFT)
-        self.scale(2)
+        self.scale(1)
 
     def starting_format(self, font, color):
         self.color = color
@@ -138,19 +138,35 @@ class Text:
             if newline:
                 text_y += text_height
             else:
-                text_x += text_width
+                text_x += text_width    
 
             if self.outline_col != -1:
-                directions = [(-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0)]
+                outline_surf = font.render(text, self.anti_alias, self.outline_col)
+                outline_surf = pygame.transform.scale(outline_surf, 
+                    (outline_surf.get_width() * self.text_scale, outline_surf.get_height() * self.text_scale))
 
-                for dir in directions:
-                    text_surf = font.render(text, self.anti_alias, self.outline_col)
-                    text_surf = pygame.transform.scale(text_surf, (text_surf.get_width() * self.text_scale, text_surf.get_height() * self.text_scale))
-                    self.game.display.blit(text_surf, (aligned_x-dir[0], aligned_y-dir[1]))
+                padding = self.text_scale
+                combined_width = outline_surf.get_width() + 2 * padding
+                combined_height = outline_surf.get_height() + 2 * padding
 
-            text_surf = font.render(text, self.anti_alias, color)
-            text_surf = pygame.transform.scale(text_surf, (text_surf.get_width() * self.text_scale, text_surf.get_height() * self.text_scale))
-            self.game.display.blit(text_surf, (aligned_x, aligned_y))
+                combined_surf = pygame.Surface((combined_width, combined_height), pygame.SRCALPHA)
+                combined_surf.fill((0, 0, 0, 0))
+
+                for dir in [(-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0)]:
+                    combined_surf.blit(outline_surf, 
+                        (padding + dir[0] * self.text_scale, padding + dir[1] * self.text_scale))
+
+                text_surf = font.render(text, self.anti_alias, color)
+                text_surf = pygame.transform.scale(text_surf, 
+                    (text_surf.get_width() * self.text_scale, text_surf.get_height() * self.text_scale))
+
+                combined_surf.blit(text_surf, (padding, padding))
+            else:
+                combined_surf = font.render(text, self.anti_alias, color)
+                combined_surf = pygame.transform.scale(combined_surf, 
+                    (combined_surf.get_width() * self.text_scale, combined_surf.get_height() * self.text_scale))
+
+            self.game.display.blit(combined_surf, (aligned_x - padding, aligned_y - padding))
 
         return self
 
